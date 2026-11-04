@@ -51,6 +51,22 @@ SCRIPT_FONTS = (
     "Noto Sans Thai",
 )
 
+#: Optional, intentionally opt-in CJK art faces. Their files are large; keep them out of default installs.
+CJK_FONTS = (
+    "ZCOOL KuaiLe",
+    "ZCOOL QingKe HuangYou",
+    "ZCOOL XiaoWei",
+    "Ma Shan Zheng",
+    "Zhi Mang Xing",
+    "Long Cang",
+    "Liu Jian Mao Cao",
+    "Noto Sans SC",
+    "Noto Serif SC",
+    "Noto Sans TC",
+    "Noto Serif TC",
+    "LXGW WenKai TC",
+)
+
 
 @dataclass(frozen=True)
 class CuratedFont:

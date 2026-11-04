@@ -2,7 +2,7 @@ from pathlib import Path
 
 from django.core.management.base import BaseCommand, CommandError
 
-from apps.fonts.catalog import EDITOR_FONTS, SCRIPT_FONTS, curated_fonts
+from apps.fonts.catalog import CJK_FONTS, EDITOR_FONTS, SCRIPT_FONTS, curated_fonts
 from apps.fonts.sources import FontSource, FontsourceSource, SourceError
 from apps.fonts.sync import SyncOptions, import_font_directory, resolve_ids, sync_families
 
@@ -48,6 +48,11 @@ class Command(BaseCommand):
             "fonts for each of the main non-Latin scripts.",
         )
         which.add_argument(
+            "--preset",
+            choices=("cjk",),
+            help="Install a curated optional preset; cjk adds Chinese display/body families (large files).",
+        )
+        which.add_argument(
             "--from-dir",
             metavar="DIR",
             help="Import already-downloaded <id>-<subset>-<weight>-<style>.woff2 files.",
@@ -69,13 +74,13 @@ class Command(BaseCommand):
             "--license", default="OFL-1.1", help="Licence recorded for --from-dir imports (default OFL-1.1)."
         )
 
-    def handle(self, *args, families=(), all=False, popular=None, from_dir=None, **options):
+    def handle(self, *args, families=(), all=False, popular=None, preset=None, from_dir=None, **options):
         if from_dir:
             return self._from_dir(Path(from_dir), options["license"])
         if popular is not None and popular < 1:
             raise CommandError("--popular needs a positive number.")
-        if not (families or all or popular):
-            raise CommandError("Name families, or pass --popular N, --all or --from-dir DIR.")
+        if not (families or all or popular or preset):
+            raise CommandError("Name families, or pass --popular N, --preset cjk, --all or --from-dir DIR.")
         styles = _csv(options["styles"])
         if not styles or not set(styles) <= {"normal", "italic"}:
             raise CommandError("--styles must be normal, italic or both.")
@@ -89,7 +94,7 @@ class Command(BaseCommand):
             concurrency=max(1, min(options["concurrency"], 8)),
         )
         source = self._source or FontsourceSource()
-        ids = self._select(source, families, all, popular)
+        ids = self._select(source, families, all, popular, preset)
 
         weights = ",".join(map(str, opts.weights))
         self.stdout.write(
@@ -114,7 +119,9 @@ class Command(BaseCommand):
                 f"{len(report.failures)} file(s) failed. Run the same command again to retry them."
             )
 
-    def _select(self, source: FontSource, families, all_: bool, popular: int | None) -> list[str]:
+    def _select(self, source: FontSource, families, all_: bool, popular: int | None, preset: str | None = None) -> list[str]:
+        if preset == "cjk":
+            return resolve_ids(CJK_FONTS)
         if popular:
             curated = curated_fonts()
             ids = [font.id for font in curated[:popular]]
