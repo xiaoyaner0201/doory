@@ -12,6 +12,7 @@ Commands are shown for Docker. Without Docker, use the `manage` helper from [man
 |------|---------|------------------|---------------|
 | Template categories | `docker compose exec api python manage.py seed_gallery` | | instant |
 | Fonts (open-licensed) | `… sync_fonts --popular 100` (or `--popular 253`, `--all`) | `DOORY_SYNC_FONTS`, `DOORY_SYNC_FONTS_ARGS` (once) | about 6 MB for 100 families |
+| Chinese art fonts (optional) | `… sync_fonts --preset cjk --subsets latin,chinese-simplified,chinese-traditional --weights 400 --styles normal` | same | large CJK files; opt in explicitly |
 | Starter templates | `… seed_templates` (`--update` refreshes them) | `DOORY_SEED_TEMPLATES` | needs the fonts first |
 | Shapes and graphics | `… seed_elements` | `DOORY_SYNC_ELEMENTS` | instant |
 | Icons, emoji, illustrations | `… sync_element_packs` (`--pack <name>` for some packs only) | `DOORY_SYNC_ELEMENTS`, `DOORY_SYNC_ELEMENTS_ARGS` | about 27,500 elements, 120–130 MB, about 40 s the first time |
