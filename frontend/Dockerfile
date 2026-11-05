@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 # --ignore-scripts: the install scripts only matter for the test tooling (`canvas` compiles a native module that has
 # no prebuilt binary for Alpine/musl and needs a compiler); the production build needs none of them.
-RUN npm ci --ignore-scripts
+RUN npm config set registry https://registry.npmmirror.com && npm ci --ignore-scripts
 COPY . .
 RUN npm run build
 

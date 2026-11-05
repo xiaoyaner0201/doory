@@ -2,6 +2,8 @@
 
 # ---- builder: resolve and install Python dependencies into a virtualenv ----
 FROM python:3.14-slim AS builder
+ENV PIP_INDEX_URL=https://mirrors.aliyun.com/pypi/simple PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright
+RUN sed -i "s#deb.debian.org#mirrors.aliyun.com#g" /etc/apt/sources.list.d/debian.sources
 ENV PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 RUN python -m venv /opt/venv
@@ -13,6 +15,8 @@ RUN pip install -r requirements.txt
 # The built-in optimizer (apps.exports.optimizers) runs them; build with `--build-arg INSTALL_IMAGE_OPTIMIZERS=false`
 # to leave them out (about 2 MB). The source tag and the release files are pinned and checked.
 FROM python:3.14-slim AS optimizers
+ENV PIP_INDEX_URL=https://mirrors.aliyun.com/pypi/simple PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright
+RUN sed -i "s#deb.debian.org#mirrors.aliyun.com#g" /etc/apt/sources.list.d/debian.sources
 ARG INSTALL_IMAGE_OPTIMIZERS=true
 ARG MOZJPEG_VERSION=4.1.5
 ARG MOZJPEG_COMMIT=6c9f0897afa1c2738d7222a0a9ab49e8b536a267
@@ -43,6 +47,8 @@ RUN mkdir -p /opt/optimizers/bin \
 
 # ---- runtime ----
 FROM python:3.14-slim AS runtime
+ENV PIP_INDEX_URL=https://mirrors.aliyun.com/pypi/simple PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright
+RUN sed -i "s#deb.debian.org#mirrors.aliyun.com#g" /etc/apt/sources.list.d/debian.sources
 
 # Build with `--build-arg INSTALL_CHROMIUM=true` to add headless Chromium, which server-side PDF
 # export needs. The image then advertises the feature through SERVER_PDF_ENABLED. Chromium runs without
